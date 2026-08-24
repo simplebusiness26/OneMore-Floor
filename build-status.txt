@@ -1,0 +1,16 @@
+status=success
+commit=01bc82e70812016e2645e87ebc62fd0e8d25ca8f
+run_id=32684097361
+checkout=success
+setup_node=success
+setup_java=success
+npm_install=success
+js_syntax_check=success
+prepare_web=success
+capacitor_add_android=success
+capacitor_sync=success
+stable_debug_signing=success
+gradle_build=success
+verify_apk=success
+upload_artifact=success
+publish_release=success

@@ -16,4 +16,4 @@ Static and moving spikes, moving platforms, collapsing tiles, disappearing platf
 Forgiving collision margins, coyote time, jump buffering, stable swept landing checks, local best score, unlockable accent themes, synthesized sound/haptics, offline service worker, and a first-run tutorial.
 
 ## Android
-The `.github/workflows/android-apk.yml` workflow packages this repository with Capacitor and publishes `one-more-floor-debug.apk` as a workflow artifact and GitHub release asset.
+The repository-level `one-more-floor-android.yml` workflow packages this folder with Capacitor and publishes `one-more-floor-debug.apk` as a workflow artifact and GitHub release asset.
