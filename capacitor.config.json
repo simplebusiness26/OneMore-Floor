@@ -1,0 +1,6 @@
+{
+  "appId":"com.simplebusiness.onemorefloor",
+  "appName":"ONE MORE FLOOR",
+  "webDir":"dist",
+  "server":{"androidScheme":"https"}
+}
