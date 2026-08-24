@@ -1,0 +1,8 @@
+{
+  "name":"one-more-floor",
+  "version":"1.0.0",
+  "private":true,
+  "scripts":{"sync":"npx cap sync android","android":"npx cap open android"},
+  "dependencies":{"@capacitor/android":"8.5.0","@capacitor/core":"8.5.0"},
+  "devDependencies":{"@capacitor/cli":"8.5.0"}
+}
