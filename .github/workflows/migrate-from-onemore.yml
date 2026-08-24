@@ -1,0 +1,134 @@
+name: Migrate ONE MORE FLOOR
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/migrate-from-onemore.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Copy game from ONE MORE series repo
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 https://github.com/simplebusiness26/OneMore.git /tmp/onemore
+          cp -a /tmp/onemore/games/one-more-floor/. ./
+          mkdir -p .github/workflows
+          cp /tmp/onemore/.github/one-more-floor-debug.keystore.b64 .github/one-more-floor-debug.keystore.b64
+          cat > .github/workflows/android-apk.yml <<'YAML'
+          name: Build ONE MORE FLOOR Android APK
+
+          on:
+            workflow_dispatch:
+            push:
+              branches: [main]
+              paths-ignore:
+                - build-status.txt
+
+          permissions:
+            contents: write
+
+          jobs:
+            build:
+              runs-on: ubuntu-latest
+              timeout-minutes: 30
+              steps:
+                - name: Checkout
+                  id: checkout
+                  uses: actions/checkout@v6
+                - name: Set up Node
+                  id: node
+                  uses: actions/setup-node@v6
+                  with:
+                    node-version: 22
+                    package-manager-cache: false
+                - name: Set up Java
+                  id: java
+                  uses: actions/setup-java@v5
+                  with:
+                    distribution: temurin
+                    java-version: '21'
+                - name: Install dependencies
+                  id: npm
+                  run: npm install --no-audit --no-fund
+                - name: Validate JavaScript
+                  id: jscheck
+                  run: node --check game.js
+                - name: Prepare web bundle
+                  id: web
+                  run: |
+                    rm -rf dist android
+                    mkdir -p dist/icons
+                    cp index.html styles.css game.js manifest.webmanifest sw.js dist/
+                    cp icons/icon.svg dist/icons/
+                    test -s dist/index.html
+                    test -s dist/game.js
+                - name: Create Android project
+                  id: capadd
+                  run: npx cap add android
+                - name: Sync web assets
+                  id: capsync
+                  run: npx cap sync android
+                - name: Install stable debug signing key
+                  id: signing
+                  run: |
+                    mkdir -p "$HOME/.android"
+                    base64 --decode .github/one-more-floor-debug.keystore.b64 > "$HOME/.android/debug.keystore"
+                    echo "33c130fbab855317613c1c24a447064619102be50c448b4092a6b4e5c997baf4  $HOME/.android/debug.keystore" | sha256sum -c -
+                    keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey >/dev/null
+                - name: Build debug APK
+                  id: gradle
+                  working-directory: android
+                  run: |
+                    chmod +x gradlew
+                    ./gradlew assembleDebug --no-daemon --stacktrace
+                - name: Verify APK
+                  id: verify
+                  run: |
+                    test -f android/app/build/outputs/apk/debug/app-debug.apk
+                    cp android/app/build/outputs/apk/debug/app-debug.apk one-more-floor-debug.apk
+                - name: Upload workflow artifact
+                  id: artifact
+                  uses: actions/upload-artifact@v7
+                  with:
+                    name: one-more-floor-debug-apk
+                    path: one-more-floor-debug.apk
+                    if-no-files-found: error
+                    retention-days: 30
+                - name: Publish GitHub release
+                  id: release
+                  env:
+                    GH_TOKEN: ${{ github.token }}
+                  run: |
+                    if gh release view one-more-floor-latest >/dev/null 2>&1; then
+                      gh release upload one-more-floor-latest one-more-floor-debug.apk --clobber
+                    else
+                      gh release create one-more-floor-latest one-more-floor-debug.apk --title "ONE MORE FLOOR Android APK" --notes "Latest installable debug APK for ONE MORE FLOOR."
+                    fi
+                - name: Record build status
+                  if: always()
+                  continue-on-error: true
+                  env:
+                    JOB_STATUS: ${{ job.status }}
+                    COMMIT_SHA: ${{ github.sha }}
+                    RUN_ID: ${{ github.run_id }}
+                  run: |
+                    printf 'status=%s\ncommit=%s\nrun_id=%s\n' "$JOB_STATUS" "$COMMIT_SHA" "$RUN_ID" > build-status.txt
+                    git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                    git add build-status.txt
+                    git diff --cached --quiet || (git commit -m "Record Android build status [skip ci]" && git push)
+          YAML
+          rm -f .github/workflows/migrate-from-onemore.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Move ONE MORE FLOOR into dedicated repository"
+          git push
