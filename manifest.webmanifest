@@ -1,0 +1,10 @@
+{
+  "name":"ONE MORE FLOOR",
+  "short_name":"One More Floor",
+  "start_url":"./",
+  "display":"standalone",
+  "orientation":"portrait",
+  "background_color":"#090a0d",
+  "theme_color":"#090a0d",
+  "icons":[{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
