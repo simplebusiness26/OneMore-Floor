@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="theme-color" content="#090a0d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>ONE MORE FLOOR</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="app" aria-label="One More Floor game">
+    <canvas id="game" width="360" height="640" aria-label="Game canvas"></canvas>
+    <section id="menu" class="panel show"><div class="eyebrow">ONE MORE</div><h1>FLOOR</h1><p class="tagline">Just one more floor.</p><div class="stats"><span>BEST <b id="menuBest">0</b></span><span>COINS <b id="menuCoins">0</b></span></div><button id="endlessBtn" class="primary">ENDLESS</button><button id="dailyBtn">THE 100 FLOORS</button><button id="themesBtn" class="small">THEMES</button></section>
+    <section id="hud" class="hud"><div><span class="hudLabel">FLOOR</span><b id="floorLabel">1</b></div><div id="modifierLabel" class="modifier"></div><button id="pauseBtn" class="iconBtn" aria-label="Pause">Ⅱ</button></section>
+    <section id="pause" class="panel compact"><div class="eyebrow">PAUSED</div><button id="resumeBtn" class="primary">RESUME</button><button id="muteBtn">SOUND: ON</button><button id="quitBtn" class="small">QUIT</button></section>
+    <section id="dead" class="panel compact"><div class="eyebrow">RUN OVER</div><div class="result"><b id="deadFloor">0</b><span>FLOORS</span></div><p>BEST <b id="deadBest">0</b></p><button id="oneMoreBtn" class="primary">ONE MORE?</button><button id="deadMenuBtn" class="small">MENU</button></section>
+    <section id="dailyComplete" class="panel compact"><div class="eyebrow">DAILY COMPLETE</div><div class="result"><b>100</b><span>FLOORS</span></div><p id="dailyTime">PERFECT RUN</p><button id="dailyAgainBtn" class="primary">ONE MORE?</button><button id="dailyMenuBtn" class="small">MENU</button></section>
+    <section id="themes" class="panel themesPanel"><div class="eyebrow">ACCENT THEMES</div><div id="themeGrid" class="themeGrid"></div><button id="themesBackBtn" class="small">BACK</button></section>
+    <section id="tutorial" class="tutorial"><div id="tutorialText">TAP TO JUMP</div></section>
+    <div id="flash" class="flash"></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
